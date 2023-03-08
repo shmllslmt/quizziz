@@ -87,3 +87,9 @@ class _QuizPageState extends State<QuizPage> {
     );
   }
 }
+
+/*
+Question1: 'Are plants always green?', false,
+Question2: 'Are boats always float?', false,
+Question3: 'Approximately one quarter of human bones are in the feet', true,
+* */
