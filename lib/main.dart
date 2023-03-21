@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'quiz_brain.dart';
+
+QuizBrain quizbrain = QuizBrain();
 
 void main() {
   runApp(MyApp());
@@ -31,6 +34,15 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
+  // To check whether user answer is correct or not
+  bool isCorrect = false;
+
+  // To keep track of our current position (with regards to the questions and answers)
+  int counter = 0;
+
+  // To keep track of the score by adding some icons into it
+  List<Icon> scoreKeeper = [];
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -40,12 +52,13 @@ class _QuizPageState extends State<QuizPage> {
           flex: 7,
           child: Center(
             child: Text(
-              'This is where the question is going to go.',
+              quizbrain.getQuestion(),
               style: TextStyle(color: Colors.white70, fontSize: 20),
               textAlign: TextAlign.center,
             ),
           ),
         ),
+        // This is the true button
         Expanded(
           flex: 1,
           child: Padding(
@@ -53,17 +66,46 @@ class _QuizPageState extends State<QuizPage> {
             child: TextButton(
               style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.resolveWith(
-                          (states) => Colors.green),
+                      (states) => Colors.green),
                   foregroundColor: MaterialStateProperty.resolveWith(
-                          (states) => Colors.white),
+                      (states) => Colors.white),
                   shape: MaterialStateProperty.resolveWith(
-                          (states) => BeveledRectangleBorder())),
+                      (states) => BeveledRectangleBorder())),
               child: Text('True'),
               onPressed: () {
+                // if user clicked the true button and the answer is also true
+                if(quizbrain.getAnswer()) {
+                  isCorrect = true;
+                }
+
+                setState(() {
+                  // if user answer is correct
+                  if(isCorrect) {
+                    scoreKeeper.add(Icon(Icons.check, color: Colors.green,));
+                  }
+                  // if user answer is incorrect
+                  else {
+                    scoreKeeper.add(Icon(Icons.close, color: Colors.red,));
+                  }
+
+                  // reset the isCorrect value
+                  isCorrect = false;
+
+                  // if we are at the last question, reset to the first
+                  if(counter == quizbrain.getTotalQuestion()-1){
+                    quizbrain.resetCounter();
+                    scoreKeeper.clear();
+                  }
+                  // else we are going to proceed to the next question
+                  else {
+                    quizbrain.updateCounter();
+                  }
+                });
               },
             ),
           ),
         ),
+        // This is the false button
         Expanded(
           flex: 1,
           child: Padding(
@@ -71,18 +113,46 @@ class _QuizPageState extends State<QuizPage> {
             child: TextButton(
               style: ButtonStyle(
                   backgroundColor:
-                  MaterialStateProperty.resolveWith((states) => Colors.red),
+                      MaterialStateProperty.resolveWith((states) => Colors.red),
                   foregroundColor: MaterialStateProperty.resolveWith(
-                          (states) => Colors.white),
+                      (states) => Colors.white),
                   shape: MaterialStateProperty.resolveWith(
-                          (states) => BeveledRectangleBorder())),
+                      (states) => BeveledRectangleBorder())),
               child: Text('False'),
               onPressed: () {
+                if(quizbrain.getAnswer() == false) {
+                  isCorrect = true;
+                }
+                setState(() {
+                  // if user answer is correct
+                  if(isCorrect) {
+                    scoreKeeper.add(Icon(Icons.check, color: Colors.green,));
+                  }
+                  // if user answer is incorrect
+                  else {
+                    scoreKeeper.add(Icon(Icons.close, color: Colors.red,));
+                  }
+
+                  // reset the isCorrect value
+                  isCorrect = false;
+
+                  // if we are at the last question, reset to the first
+                  if(counter == quizbrain.getTotalQuestion()-1){
+                    quizbrain.resetCounter();
+                    scoreKeeper.clear();
+                  }
+                  // else we are going to proceed to the next question
+                  else {
+                   quizbrain.updateCounter();
+                  }
+                });
               },
             ),
           ),
         ),
-        //TODO: Add a Row widget here as your scorekeeper
+        Row(
+          children: scoreKeeper,
+        ),
       ],
     );
   }
