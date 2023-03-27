@@ -1,10 +1,11 @@
 import 'question.dart';
 
+// QuizBrain has list of Question objects
 class QuizBrain {
-  int counter = 0;
+  int _counter = 0;
 
   // To keep the questions and answers as matching pairs in a list object
-  List<Question> questionBank = [
+  List<Question> _questionBank = [
     Question(question: 'Are plants always green?', answer: false),
     Question(question: 'Are boats always float?', answer: false),
     Question(question: 'Approximately one quarter of human bones are in the feet', answer: true),
@@ -34,23 +35,31 @@ class QuizBrain {
         answer: true)
   ];
 
+  void nextQuestion() {
+    _counter++;
+  }
+
   String getQuestion() {
-    return questionBank[counter].question;
-  }
-
-  void updateCounter() {
-    counter++;
-  }
-
-  void resetCounter() {
-    counter = 0;
+    return _questionBank[_counter].question;
   }
 
   bool getAnswer() {
-    return questionBank[counter].answer;
+    return _questionBank[_counter].answer;
+  }
+
+  void resetCounter() {
+    _counter = 0;
   }
 
   int getTotalQuestion() {
-    return questionBank.length;
+    return _questionBank.length;
+  }
+
+  bool endOfQuestion() {
+    if (_counter == _questionBank.length - 1) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

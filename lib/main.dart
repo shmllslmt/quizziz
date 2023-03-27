@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'quiz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 QuizBrain quizbrain = QuizBrain();
 
@@ -7,6 +8,7 @@ void main() {
   runApp(MyApp());
 }
 
+// Basic UI of the App
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -26,6 +28,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// Which is going to change the state of the widget
 class QuizPage extends StatefulWidget {
   const QuizPage({Key? key}) : super(key: key);
 
@@ -42,6 +45,52 @@ class _QuizPageState extends State<QuizPage> {
 
   // To keep track of the score by adding some icons into it
   List<Icon> scoreKeeper = [];
+
+  void checkAnswer(bool userChoice) {
+    // if user clicked the true button and the answer is also true
+    if (quizbrain.getAnswer() == userChoice) {
+      isCorrect = true;
+    }
+
+    setState(
+      () {
+        // if user answer is correct
+        if (isCorrect) {
+          scoreKeeper.add(Icon(
+            Icons.check,
+            color: Colors.green,
+          ));
+        }
+        // if user answer is incorrect
+        else {
+          scoreKeeper.add(Icon(
+            Icons.close,
+            color: Colors.red,
+          ));
+        }
+
+        // reset the isCorrect value
+        isCorrect = false;
+
+        // if we are at the last question, reset to the first
+        if (quizbrain.endOfQuestion()) {
+          // Show the alert first
+          Alert(
+                  context: context,
+                  title: "FINISH",
+                  desc: "Congratulations! You have reached the end of the quiz.")
+              .show();
+
+          quizbrain.resetCounter();
+          scoreKeeper.clear();
+        }
+        // else we are going to proceed to the next question
+        else {
+          quizbrain.nextQuestion();
+        }
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,34 +122,7 @@ class _QuizPageState extends State<QuizPage> {
                       (states) => BeveledRectangleBorder())),
               child: Text('True'),
               onPressed: () {
-                // if user clicked the true button and the answer is also true
-                if(quizbrain.getAnswer()) {
-                  isCorrect = true;
-                }
-
-                setState(() {
-                  // if user answer is correct
-                  if(isCorrect) {
-                    scoreKeeper.add(Icon(Icons.check, color: Colors.green,));
-                  }
-                  // if user answer is incorrect
-                  else {
-                    scoreKeeper.add(Icon(Icons.close, color: Colors.red,));
-                  }
-
-                  // reset the isCorrect value
-                  isCorrect = false;
-
-                  // if we are at the last question, reset to the first
-                  if(counter == quizbrain.getTotalQuestion()-1){
-                    quizbrain.resetCounter();
-                    scoreKeeper.clear();
-                  }
-                  // else we are going to proceed to the next question
-                  else {
-                    quizbrain.updateCounter();
-                  }
-                });
+                checkAnswer(true);
               },
             ),
           ),
@@ -120,32 +142,7 @@ class _QuizPageState extends State<QuizPage> {
                       (states) => BeveledRectangleBorder())),
               child: Text('False'),
               onPressed: () {
-                if(quizbrain.getAnswer() == false) {
-                  isCorrect = true;
-                }
-                setState(() {
-                  // if user answer is correct
-                  if(isCorrect) {
-                    scoreKeeper.add(Icon(Icons.check, color: Colors.green,));
-                  }
-                  // if user answer is incorrect
-                  else {
-                    scoreKeeper.add(Icon(Icons.close, color: Colors.red,));
-                  }
-
-                  // reset the isCorrect value
-                  isCorrect = false;
-
-                  // if we are at the last question, reset to the first
-                  if(counter == quizbrain.getTotalQuestion()-1){
-                    quizbrain.resetCounter();
-                    scoreKeeper.clear();
-                  }
-                  // else we are going to proceed to the next question
-                  else {
-                   quizbrain.updateCounter();
-                  }
-                });
+                checkAnswer(false);
               },
             ),
           ),
